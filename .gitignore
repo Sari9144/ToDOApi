@@ -31,3 +31,6 @@ db_config.json
 # --- OS Files ---
 .DS_Store
 Thumbs.db
+
+
+*.mp4
