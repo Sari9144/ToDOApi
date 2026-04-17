@@ -6,25 +6,25 @@ axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 const todoService = {
   // שליפת כל המשימות
+
+  // 1. שליפת כל המשימות - לשנות ל-items
   getTasks: async () => {
-    // פונה ל: baseURL + /item => .../api/item
-    const result = await axios.get('/item'); 
+    const result = await axios.get('/items'); 
     return result.data;
   },
 
-  // הוספת משימה חדשה
+  // 2. הוספת משימה חדשה - לשנות ל-items
   addTask: async (name) => {
-    const result = await axios.post('/item', { 
+    const result = await axios.post('/items', { 
         name: name, 
         isComplete: false 
     });
     return result.data;
   },
 
-  // עדכון משימה
+  // 3. עדכון משימה - לשנות ל-items
   setCompleted: async (id, isComplete, name) => {
-    // פונה ל: .../api/item/{id}
-    const result = await axios.put(`/item/${id}`, { 
+    const result = await axios.put(`/items/${id}`, { 
         id: id,
         name: name,
         isComplete: isComplete 
@@ -32,11 +32,12 @@ const todoService = {
     return result.data;
   },
 
-  // מחיקת משימה
+  // 4. מחיקת משימה - לשנות ל-items
   deleteTask: async (id) => {
-    const result = await axios.delete(`/item/${id}`);
+    const result = await axios.delete(`/items/${id}`);
     return result.data;
   }
-};
+}
+;
 
 export default todoService;
