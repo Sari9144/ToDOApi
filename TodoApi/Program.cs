@@ -1,10 +1,17 @@
+
 using Microsoft.EntityFrameworkCore;
 using TodoApi; 
 
 var builder = WebApplication.CreateBuilder(args);
 
+// --- עדכון הגדרת ה-Database ---
+// שליפת מחרוזת החיבור ממשתני הסביבה של Render
+var connectionString = builder.Configuration.GetConnectionString("ToDoDb");
 
-builder.Services.AddDbContext<ToDoDbContext>();
+builder.Services.AddDbContext<ToDoDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), 
+        mysqlOptions => mysqlOptions.EnableRetryOnFailure()));
+// ------------------------------
 
 // הגדרת CORS
 builder.Services.AddCors(options => {
@@ -21,16 +28,13 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-
-
 // הפעלת Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseCors("AllowAll"); 
 
-//Routes
-
+// Routes
 app.MapGet("/", () => "ToDo API is running!");
 
 // שליפת כל המשימות
@@ -44,18 +48,17 @@ app.MapPost("/items", async (ToDoDbContext db, Item newItem) => {
     return Results.Created($"/items/{newItem.Id}", newItem);
 });
 
-
 app.MapPut("/items/{id}", async (ToDoDbContext db, int id, Item inputItem) => {
     var item = await db.Items.FindAsync(id);
     if (item is null) return Results.NotFound();
 
-    // עדכון רק אם נשלח ערך, או שמירה על הערך הקיים
     item.Name = inputItem.Name ?? item.Name; 
     item.IsComplete = inputItem.IsComplete;
 
     await db.SaveChangesAsync();
     return Results.NoContent();
 });
+
 // מחיקת משימה
 app.MapDelete("/items/{id}", async (ToDoDbContext db, int id) => {
     if (await db.Items.FindAsync(id) is Item item) {
