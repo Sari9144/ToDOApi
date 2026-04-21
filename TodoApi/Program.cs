@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using TodoApi; 
 
@@ -8,8 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 // שליפת מחרוזת החיבור ממשתני הסביבה של Render
 var connectionString = builder.Configuration.GetConnectionString("ToDoDb");
 
+// הגדרת גרסה קבועה כדי למנוע שגיאות חיבור בעלייה (AutoDetect)
+var serverVersion = new MySqlServerVersion(new Version(8, 0, 33)); 
+
 builder.Services.AddDbContext<ToDoDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), 
+    options.UseMySql(connectionString, serverVersion, 
         mysqlOptions => mysqlOptions.EnableRetryOnFailure()));
 // ------------------------------
 
@@ -35,6 +37,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.EnsureCreated(); 
 }
 // ---------------------------------
+
 // הפעלת Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
