@@ -28,6 +28,13 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// --- קוד ליצירת טבלאות אוטומטית ---
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ToDoDbContext>();
+    db.Database.EnsureCreated(); 
+}
+// ---------------------------------
 // הפעלת Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
